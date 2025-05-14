@@ -69,7 +69,15 @@ fi
 
 # Set Powerlevel10k as the default theme in .zshrc
 echo "Setting Powerlevel10k as the default theme..."
-sed -i '' 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
+if grep -q 'ZSH_THEME="robbyrussell"' "$HOME/.zshrc"; then
+    sed -i '' 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$HOME/.zshrc"
+    echo "Updated ZSH_THEME to powerlevel10k in .zshrc"
+elif grep -q 'ZSH_THEME="powerlevel10k\/powerlevel10k"' "$HOME/.zshrc"; then
+    echo "Powerlevel10k theme is already set in .zshrc, skipping"
+else
+    echo "Warning: Could not find default ZSH_THEME setting in .zshrc"
+    echo "You may need to manually set ZSH_THEME=\"powerlevel10k/powerlevel10k\" in your .zshrc file"
+fi
 
 # Set zsh as the default shell if it's not already
 if [[ $SHELL != *"zsh"* ]]; then
@@ -79,11 +87,16 @@ fi
 
 # Add VS Code to PATH
 echo "Adding VS Code to PATH..."
-cat << EOF >> "$HOME/.zshrc"
+if ! grep -q "# Add Visual Studio Code (code)" "$HOME/.zshrc"; then
+    cat << EOF >> "$HOME/.zshrc"
 
 # Add Visual Studio Code (code)
 export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 EOF
+    echo "Added VS Code to PATH in .zshrc"
+else
+    echo "VS Code PATH configuration already exists in .zshrc, skipping"
+fi
 
 # Install asdf version manager
 echo "Installing asdf version manager..."
@@ -96,7 +109,8 @@ else
     
     # Add asdf to .zshrc
     echo "Adding asdf to .zshrc..."
-    cat << EOF >> "$HOME/.zshrc"
+    if ! grep -q "# asdf version manager" "$HOME/.zshrc"; then
+        cat << EOF >> "$HOME/.zshrc"
 
 # asdf version manager
 . "$(brew --prefix asdf)/libexec/asdf.sh"
@@ -104,6 +118,10 @@ else
 # Node.js legacy file dynamic strategy
 export ASDF_NODEJS_LEGACY_FILE_DYNAMIC_STRATEGY=latest_installed
 EOF
+        echo "Added asdf configuration to .zshrc"
+    else
+        echo "asdf configuration already exists in .zshrc, skipping"
+    fi
 fi
 
 # Install asdf plugins and latest versions
