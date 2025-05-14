@@ -165,12 +165,39 @@ echo "Installing latest Node.js version..."
 asdf install nodejs latest
 asdf set --home nodejs "$(asdf latest nodejs)"
 
+# Install Docker
+echo "Installing Docker Desktop for Mac..."
+if [ -d "/Applications/Docker.app" ]; then
+    echo "Docker Desktop is already installed."
+else
+    echo "Downloading and installing Docker Desktop..."
+    brew install --cask docker
+fi
+
+# Check if Docker CLI is available and Docker Desktop is running
+echo "Setting up Docker..."
+if ! command -v docker &>/dev/null; then
+    echo "Docker CLI not found. Please start Docker Desktop after installation."
+else
+    # Check if Docker is running
+    if ! docker info &>/dev/null; then
+        echo "Docker Desktop is installed but not running."
+        echo "Please start Docker Desktop manually after installation."
+        open -a Docker
+    else
+        echo "Docker is installed and running."
+    fi
+fi
+
 echo "=== Installation completed! ==="
 echo "Please restart your terminal or run 'zsh' to start using Oh My Zsh with Powerlevel10k theme."
 echo "When you first start your terminal with Powerlevel10k, it will guide you through the setup process."
-echo "You can find iTerm2, VS Code, Chrome, and Slack in your Applications folder."
+echo "You can find iTerm2, VS Code, Chrome, Slack, and Docker in your Applications folder."
 echo "To use VS Code from the terminal, restart your terminal and use the 'code' command."
 echo "The following development tools have been installed via asdf:"
 echo "- Ruby: $(asdf current ruby | awk '{print $2}')"
 echo "- Python: $(asdf current python | awk '{print $2}')"
 echo "- Node.js: $(asdf current nodejs | awk '{print $2}')"
+echo ""
+echo "Docker Desktop has been installed. If it's not running, please start it manually."
+echo "You may need to accept the Docker license agreement on first launch."
