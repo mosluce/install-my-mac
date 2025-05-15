@@ -191,6 +191,24 @@ else
     brew install --cask postman
 fi
 
+# Install AWS CLI
+echo "Installing AWS CLI..."
+if command -v aws &>/dev/null; then
+    echo "AWS CLI is already installed. Checking version..."
+    aws --version
+else
+    echo "Downloading and installing AWS CLI..."
+    brew install awscli
+    
+    # Verify installation
+    if command -v aws &>/dev/null; then
+        echo "AWS CLI installed successfully."
+        aws --version
+    else
+        echo "AWS CLI installation may have failed. Please check manually."
+    fi
+fi
+
 # Check if Docker CLI is available and Docker Desktop is running
 echo "Setting up Docker..."
 if ! command -v docker &>/dev/null; then
@@ -220,3 +238,5 @@ echo "Docker Desktop has been installed. If it's not running, please start it ma
 echo "You may need to accept the Docker license agreement on first launch."
 echo ""
 echo "Postman has been installed for API development and testing."
+echo ""
+echo "AWS CLI has been installed. To configure AWS credentials, run: aws configure"
