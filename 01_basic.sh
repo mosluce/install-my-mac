@@ -106,6 +106,8 @@ if command -v asdf &>/dev/null; then
 else
     echo "Installing asdf..."
     brew install asdf
+    mkdir -p "${ASDF_DATA_DIR:-$HOME/.asdf}/completions"
+    asdf completion zsh > "${ASDF_DATA_DIR:-$HOME/.asdf}/completions/_asdf"
     
     # Add asdf to .zshrc
     echo "Adding asdf to .zshrc..."
@@ -113,7 +115,13 @@ else
         cat << EOF >> "$HOME/.zshrc"
 
 # asdf version manager
-. "$(brew --prefix asdf)/libexec/asdf.sh"
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
+# append completions to fpath
+fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
+
+# initialise completions with ZSH's compinit
+autoload -Uz compinit && compinit
 
 # Node.js legacy file dynamic strategy
 export ASDF_NODEJS_LEGACY_FILE_DYNAMIC_STRATEGY=latest_installed
